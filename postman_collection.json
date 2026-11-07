@@ -1,0 +1,182 @@
+{
+  "info": {
+    "_postman_id": "botica-nova-salud-senati-2026",
+    "name": "Botica Nova Salud (FarmaPlus) - API Endpoints",
+    "description": "Colección completa de endpoints para el Trabajo Final Fullstack Developer de SENATI",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Diagnóstico & Seguridad (5 Capas)",
+      "item": [
+        {
+          "name": "Healthcheck & Estado de Capas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "health"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Autenticación (JWT & Roles)",
+      "item": [
+        {
+          "name": "Login Cajero",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"caja@novasalud.com\",\n  \"password\": \"caja123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/auth/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login Administrador",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@novasalud.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/auth/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Catálogo & Control de Inventario",
+      "item": [
+        {
+          "name": "Listar Todos los Medicamentos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/productos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "productos"]
+            }
+          }
+        },
+        {
+          "name": "Registrar Nuevo Lote / Medicamento",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Amoxicilina 500mg\",\n  \"laboratorio\": \"Medifarma\",\n  \"lote\": \"MF-2026-99X\",\n  \"fechaVencimiento\": \"2027-12-31\",\n  \"categoria\": \"Antibióticos\",\n  \"stockActual\": 50,\n  \"stockMinimo\": 10,\n  \"precioVenta\": 25.50,\n  \"ubicacion\": \"Estante B1\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/productos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "productos"]
+            }
+          }
+        },
+        {
+          "name": "Ajuste Rápido de Stock (+ / -)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cantidad\": 10\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/productos/mock-prod-1/stock",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "productos", "mock-prod-1", "stock"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Algoritmo de Alertas (Stock Bajo & Vencimiento)",
+      "item": [
+        {
+          "name": "Obtener Alertas Sanitarias y de Reorden",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/productos/alertas",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "productos", "alertas"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Punto de Venta (POS) & Comprobantes",
+      "item": [
+        {
+          "name": "Procesar Venta y Descontar Stock",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cliente\": {\n    \"nombre\": \"María Gonzales\",\n    \"documento\": \"45871236\",\n    \"telefono\": \"987123456\"\n  },\n  \"productos\": [\n    {\n      \"productoId\": \"mock-prod-1\",\n      \"cantidad\": 2\n    }\n  ],\n  \"metodoPago\": \"Efectivo\",\n  \"montoRecibido\": 50.00,\n  \"vendedor\": \"Juan Pérez (Cajero)\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/ventas",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "ventas"]
+            }
+          }
+        },
+        {
+          "name": "Listar Historial de Ventas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/ventas",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "ventas"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+
