@@ -5,18 +5,21 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [usuario, setUsuario] = useState(() => {
-    const cached = localStorage.getItem('nova_salud_user');
-    return cached
-      ? JSON.parse(cached)
-      : {
-          id: 'demo-cajero',
-          nombre: 'Juan Pérez (Cajero)',
-          email: 'caja@novasalud.com',
-          rol: 'Cajero',
-        };
+    const cachedUser = localStorage.getItem('nova_salud_user');
+    const token = localStorage.getItem('nova_salud_token');
+    if (cachedUser && token) {
+      try {
+        return JSON.parse(cachedUser);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
   });
+
   const [loading, setLoading] = useState(false);
 
+  // Al montar, valida si el token guardado sigue siendo válido
   useEffect(() => {
     const token = localStorage.getItem('nova_salud_token');
     if (token) {
@@ -29,7 +32,7 @@ export const AuthProvider = ({ children }) => {
           }
         })
         .catch(() => {
-          // Token expirado o servidor reiniciado
+          logout();
         });
     }
   }, []);
@@ -53,41 +56,21 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('nova_salud_token');
     localStorage.removeItem('nova_salud_user');
-    setUsuario({
-      id: 'demo-cajero',
-      nombre: 'Juan Pérez (Cajero)',
-      email: 'caja@novasalud.com',
-      rol: 'Cajero',
-    });
+    setUsuario(null);
   };
 
-  // Alternador rápido de rol para evaluación académica de SENATI
-  const switchRole = (nuevoRol) => {
-    const rolesMap = {
-      Admin: {
-        id: 'demo-admin',
-        nombre: 'Lic. Carlos Mendoza (Admin)',
-        email: 'admin@novasalud.com',
-        rol: 'Admin',
-      },
-      Farmacéutico: {
-        id: 'demo-farma',
-        nombre: 'Q.F. Elena Ramos (Farmacéutica)',
-        email: 'farmacia@novasalud.com',
-        rol: 'Farmacéutico',
-      },
-      Cajero: {
-        id: 'demo-cajero',
-        nombre: 'Juan Pérez (Cajero)',
-        email: 'caja@novasalud.com',
-        rol: 'Cajero',
-      },
-    };
-
-    const targetUser = rolesMap[nuevoRol] || rolesMap['Cajero'];
-    setUsuario(targetUser);
-    localStorage.setItem('nova_salud_user', JSON.stringify(targetUser));
+  // Función para ingresar rápido con credenciales de prueba durante la evaluación
+  const demoLogin = async (rol = 'Admin') => {
+    if (rol === 'Admin') {
+      return await login('admin@novasalud.com', 'admin123');
+    } else {
+      return await login('caja@novasalud.com', 'caja123');
+    }
   };
+
+  const isAuthenticated = Boolean(usuario && localStorage.getItem('nova_salud_token'));
+  const isAdmin = usuario?.rol === 'Admin';
+  const isCajero = usuario?.rol === 'Cajero';
 
   return (
     <AuthContext.Provider
@@ -96,7 +79,10 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         logout,
-        switchRole,
+        demoLogin,
+        isAuthenticated,
+        isAdmin,
+        isCajero,
       }}
     >
       {children}
@@ -105,4 +91,3 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
-

@@ -75,6 +75,9 @@ const InventarioPage = ({ productos, onRefresh }) => {
     });
   }, [productos, busqueda, filtroCategoria, filtroLaboratorio, filtroEstado]);
 
+  // Control de permisos según Rol (Ocultar crear/editar/eliminar si es Cajero)
+  const esAdmin = usuario?.rol === 'Admin';
+
   // Guardar (Crear o Actualizar)
   const handleGuardarProducto = async (data) => {
     if (productoSeleccionado) {
@@ -122,16 +125,22 @@ const InventarioPage = ({ productos, onRefresh }) => {
           </p>
         </div>
 
-        <button
-          className="btn-primary"
-          onClick={() => {
-            setProductoSeleccionado(null);
-            setModalOpen(true);
-          }}
-        >
-          <Plus size={18} />
-          <span>Registrar Nuevo Medicamento / Lote</span>
-        </button>
+        {esAdmin ? (
+          <button
+            className="btn-primary"
+            onClick={() => {
+              setProductoSeleccionado(null);
+              setModalOpen(true);
+            }}
+          >
+            <Plus size={18} />
+            <span>Registrar Nuevo Medicamento / Lote</span>
+          </button>
+        ) : (
+          <div className="bg-slate-100 border border-slate-200 text-slate-500 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5">
+            <span>Modo Lectura (Gestión de Lotes exclusiva para Administrador)</span>
+          </div>
+        )}
       </div>
 
       {/* Alertas / Mensajes de operación */}
@@ -352,29 +361,35 @@ const InventarioPage = ({ productos, onRefresh }) => {
                         </div>
                       </td>
 
-                      {/* Acciones Editar y Eliminar */}
+                      {/* Acciones Editar y Eliminar (Solo visibles y permitidas para Admin) */}
                       <td style={{ textAlign: 'right' }}>
-                        <div style={{ display: 'inline-flex', gap: '0.4rem' }}>
-                          <button
-                            className="btn-secondary"
-                            style={{ padding: '0.35rem 0.6rem' }}
-                            title="Editar Medicamento"
-                            onClick={() => {
-                              setProductoSeleccionado(p);
-                              setModalOpen(true);
-                            }}
-                          >
-                            <Edit2 size={14} />
-                          </button>
-                          <button
-                            className="btn-danger"
-                            style={{ padding: '0.35rem 0.6rem' }}
-                            title="Eliminar del Catálogo"
-                            onClick={() => handleEliminar(p._id, p.nombre)}
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
+                        {esAdmin ? (
+                          <div style={{ display: 'inline-flex', gap: '0.4rem' }}>
+                            <button
+                              className="btn-secondary"
+                              style={{ padding: '0.35rem 0.6rem' }}
+                              title="Editar Medicamento (Admin)"
+                              onClick={() => {
+                                setProductoSeleccionado(p);
+                                setModalOpen(true);
+                              }}
+                            >
+                              <Edit2 size={14} />
+                            </button>
+                            <button
+                              className="btn-danger"
+                              style={{ padding: '0.35rem 0.6rem' }}
+                              title="Eliminar del Catálogo (Admin)"
+                              onClick={() => handleEliminar(p._id, p.nombre)}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="text-[11px] text-slate-400 font-medium italic">
+                            Solo Admin
+                          </span>
+                        )}
                       </td>
                     </tr>
                   );

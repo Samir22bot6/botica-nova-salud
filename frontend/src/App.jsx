@@ -4,10 +4,14 @@ import POSPage from './pages/POSPage';
 import InventarioPage from './pages/InventarioPage';
 import AlertasPage from './pages/AlertasPage';
 import VentasHistorialPage from './pages/VentasHistorialPage';
+import Login from './components/Login';
+import ProtectedRoute from './components/ProtectedRoute';
 import api from './api/axiosClient';
-import { Database, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { useAuth } from './context/AuthContext';
+import { Database, ShieldCheck } from 'lucide-react';
 
 function App() {
+  const { isAuthenticated, usuario } = useAuth();
   const [activeTab, setActiveTab] = useState('pos');
   const [productos, setProductos] = useState([]);
   const [alertasCount, setAlertasCount] = useState(0);
@@ -17,6 +21,7 @@ function App() {
 
   // Carga global de productos e inventario
   const cargarDatos = useCallback(async () => {
+    if (!isAuthenticated) return;
     try {
       setDbError(null);
       const [resProd, resAlertas] = await Promise.all([
@@ -32,11 +37,15 @@ function App() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
-    cargarDatos();
-  }, [cargarDatos]);
+    if (isAuthenticated) {
+      cargarDatos();
+    } else {
+      setLoading(false);
+    }
+  }, [isAuthenticated, cargarDatos]);
 
   // Sembrar datos de prueba con un solo clic si la BD está vacía
   const handleSeedDB = async (forzar = false) => {
@@ -50,6 +59,15 @@ function App() {
       setSeedStatus(`Error: ${err.message}`);
     }
   };
+
+  // Si no está autenticado, renderizar la pantalla de Login directamente mediante ProtectedRoute
+  if (!isAuthenticated) {
+    return (
+      <ProtectedRoute>
+        <div>Cargando...</div>
+      </ProtectedRoute>
+    );
+  }
 
   return (
     <div className="app-container">
@@ -138,7 +156,7 @@ function App() {
             <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
               <ShieldCheck size={14} color="var(--primary)" /> 5 Capas de Seguridad Activas
             </span>
-            <span>Node.js • Express • MongoDB Atlas • React + Vite</span>
+            <span>Usuario activo: <strong>{usuario?.nombre}</strong> ({usuario?.rol})</span>
           </div>
         </div>
       </footer>
@@ -147,4 +165,3 @@ function App() {
 }
 
 export default App;
-

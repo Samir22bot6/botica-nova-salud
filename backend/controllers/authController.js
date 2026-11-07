@@ -1,9 +1,9 @@
 const Usuario = require('../models/Usuario');
 const jwt = require('jsonwebtoken');
 
-const generateToken = (id, rol, nombre) => {
+const generateToken = (id, rol, nombre, email) => {
   return jwt.sign(
-    { id, rol, nombre },
+    { id, rol, nombre, email },
     process.env.JWT_SECRET || 'secreto_super_seguro_botica_2026',
     { expiresIn: '8h' }
   );
@@ -39,7 +39,7 @@ const login = async (req, res, next) => {
       });
     }
 
-    const token = generateToken(user._id, user.rol, user.nombre);
+    const token = generateToken(user._id, user.rol, user.nombre, user.email);
 
     res.json({
       success: true,
@@ -79,7 +79,7 @@ const register = async (req, res, next) => {
       rol: rol || 'Cajero',
     });
 
-    const token = generateToken(user._id, user.rol, user.nombre);
+    const token = generateToken(user._id, user.rol, user.nombre, user.email);
 
     res.status(201).json({
       success: true,

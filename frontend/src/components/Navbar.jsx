@@ -7,12 +7,13 @@ import {
   Activity, 
   ShieldCheck, 
   User, 
-  RefreshCw 
+  RefreshCw,
+  LogOut
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = ({ activeTab, setActiveTab, alertasCount, onRefresh }) => {
-  const { usuario, switchRole } = useAuth();
+  const { usuario, logout, demoLogin } = useAuth();
 
   return (
     <header className="navbar">
@@ -81,29 +82,36 @@ const Navbar = ({ activeTab, setActiveTab, alertasCount, onRefresh }) => {
             <ShieldCheck size={16} color="var(--primary)" />
             <div>
               <span style={{ fontWeight: 700, fontSize: '0.8rem' }}>
+                {usuario?.nombre || 'Usuario'}
+              </span>
+              <span className={`ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                usuario?.rol === 'Admin'
+                  ? 'bg-purple-100 text-purple-800'
+                  : 'bg-sky-100 text-sky-800'
+              }`}>
                 {usuario?.rol || 'Cajero'}
               </span>
             </div>
-            {/* Selector de rol para evaluar permisos */}
+            {/* Selector de alternancia rápida para evaluación */}
             <select
               value={usuario?.rol || 'Cajero'}
-              onChange={(e) => switchRole(e.target.value)}
-              style={{
-                marginLeft: '0.25rem',
-                border: 'none',
-                background: 'transparent',
-                fontWeight: 600,
-                fontSize: '0.75rem',
-                color: 'var(--text-muted)',
-                cursor: 'pointer',
-              }}
-              title="Cambiar rol para pruebas académicas"
+              onChange={(e) => demoLogin(e.target.value)}
+              className="text-xs bg-transparent border-none text-slate-500 font-semibold cursor-pointer outline-none ml-1"
+              title="Cambiar sesión para evaluar permisos"
             >
               <option value="Admin">Admin</option>
-              <option value="Farmacéutico">Farmacéutico</option>
               <option value="Cajero">Cajero</option>
             </select>
           </div>
+
+          <button
+            onClick={logout}
+            className="btn-secondary text-rose-600 hover:text-rose-700 hover:bg-rose-50 border-rose-200"
+            title="Cerrar sesión"
+            style={{ padding: '0.45rem 0.65rem' }}
+          >
+            <LogOut size={15} />
+          </button>
         </div>
       </div>
     </header>

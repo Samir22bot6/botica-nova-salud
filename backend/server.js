@@ -114,7 +114,7 @@ app.use(errorHandler);
 
 // Arranque del Servidor
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`====================================================`);
   console.log(`[Nova Salud Backend] Servidor escuchando en puerto ${PORT}`);
   console.log(`[Seguridad] 5 Capas de Middleware activas`);
